@@ -89,5 +89,36 @@ void tdt_imprimirTraducciones(tdt* tabla, FILE *pFile) {
 }
 
 maxmin* tdt_obtenerMaxMin(tdt* tabla) {
-  return 0;
+	if(tabla->primera != NULL){
+		maxmin* maximoYMinimo = malloc(sizeof(maxmin));
+		for(int i = 0;i<256;i++){
+			if (tabla->primera->entradas[i] != NULL){
+				for(int j= 0;j<256;j++){
+					if(tabla->primera->entradas[i]->entradas[j] != NULL){
+						for(int k=0;k<256;k++){
+							if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valido == 1){
+								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15] > maximoYMinimo->max_valor[15]){
+									maximoYMinimo->max_valor[15] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15];
+									maximoYMinimo->max_clave[0] = i;
+									maximoYMinimo->max_clave[1] = j;
+									maximoYMinimo->max_clave[2] = k;
+								}
+								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15] < maximoYMinimo->min_valor[15]){
+									maximoYMinimo->min_valor[15] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15];
+									maximoYMinimo->min_clave[0] = i;
+									maximoYMinimo->min_clave[1] = j;
+									maximoYMinimo->min_clave[2] = k;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return maximoYMinimo;
+	}
+	else
+	{
+		return NULL;
+	}
 }
