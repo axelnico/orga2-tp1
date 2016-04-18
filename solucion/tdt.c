@@ -4,6 +4,9 @@ void tdt_agregar(tdt* tabla, uint8_t* clave, uint8_t* valor) {
 	// si no hay ninguna traduccion entonces la primera tabla no existe y por lo tanto, ninguna de sus subtablas
 	if(tabla->primera == NULL){
 		tabla->primera = malloc(sizeof(tdtN1));
+		for(int i=0;i<=255;i++){
+			tabla->primera->entradas[i] = NULL;
+		}
 		tabla->primera->entradas[clave[0]] = malloc(sizeof(tdtN2));
 		tabla->primera->entradas[clave[0]]->entradas[clave[1]] = malloc(sizeof(tdtN3));
 	}
@@ -22,9 +25,14 @@ void tdt_agregar(tdt* tabla, uint8_t* clave, uint8_t* valor) {
 		}
 	}
 	// En la tercera subtabla en la posicion del tercer caracter registro la nueva traduccion
-	tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valor.val[15] = *valor;
-	tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido = 1;
-	tabla->cantidad = tabla->cantidad + 1;
+	for(int i=0;i<=14;i++){
+		tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valor.val[i] = valor[i];
+	}
+
+	if(!tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido == 1){
+		tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido = 1;
+		tabla->cantidad = tabla->cantidad + 1;
+	}
 }
 
 void tdt_borrar(tdt* tabla, uint8_t* clave) {
@@ -66,11 +74,9 @@ void tdt_borrar(tdt* tabla, uint8_t* clave) {
 
 void tdt_imprimirTraducciones(tdt* tabla, FILE *pFile) {
 	fseek(pFile,0,SEEK_END);
-	char* inicioIdentificacion = "- ";
-	fwrite(inicioIdentificacion,sizeof(char),sizeof(inicioIdentificacion),pFile);
-	fwrite(tabla->identificacion,sizeof(char),sizeof(tabla->identificacion),pFile);
-	char* finIdentificacion = " -/n";
-	fwrite(finIdentificacion,sizeof(char),sizeof(finIdentificacion),pFile);
+	fputs( "- ", pFile );
+	fprintf(pFile, "%s", tabla->identificacion);
+	fputs(" -\n",pFile);
 	if(tabla->primera != NULL){
 		for(int i = 0;i<256;i++){
 			if (tabla->primera->entradas[i] != NULL){
@@ -78,7 +84,11 @@ void tdt_imprimirTraducciones(tdt* tabla, FILE *pFile) {
 					if(tabla->primera->entradas[i]->entradas[j] != NULL){
 						for(int k=0;k<256;k++){
 							if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valido == 1){
-								fprintf(pFile, "%X%X%X => %X\n", i,j,k,tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15]);
+								fprintf(pFile, "%02X%02X%02X => ", i,j,k);
+								for(int l=0;l<=14;l++){
+									fprintf(pFile,"%02X",tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[l]);
+								}
+								fprintf(pFile, "\n");
 							}
 						}
 					}
@@ -89,22 +99,45 @@ void tdt_imprimirTraducciones(tdt* tabla, FILE *pFile) {
 }
 
 maxmin* tdt_obtenerMaxMin(tdt* tabla) {
+	maxmin* maximoYMinimo = malloc(sizeof(maxmin));
+	for(int i=0;i<=2;i++){
+		maximoYMinimo->max_clave[i] = 0;
+	}
+	for(int i=0;i<=2;i++){
+		maximoYMinimo->min_clave[i] = 255;
+	}
+	for(int i=0;i<=14;i++){
+		maximoYMinimo->max_valor[i] = 0;
+	}
+	for(int i=0;i<=14;i++){
+		maximoYMinimo->min_valor[i] = 255;
+	}
 	if(tabla->primera != NULL){
-		maxmin* maximoYMinimo = malloc(sizeof(maxmin));
 		for(int i = 0;i<256;i++){
 			if (tabla->primera->entradas[i] != NULL){
 				for(int j= 0;j<256;j++){
 					if(tabla->primera->entradas[i]->entradas[j] != NULL){
 						for(int k=0;k<256;k++){
 							if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valido == 1){
-								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15] > maximoYMinimo->max_valor[15]){
-									maximoYMinimo->max_valor[15] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15];
-									maximoYMinimo->max_clave[0] = i;
-									maximoYMinimo->max_clave[1] = j;
-									maximoYMinimo->max_clave[2] = k;
+								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[0] > maximoYMinimo->max_valor[0]){
+									for(int l=0;l<=14;l++){
+										maximoYMinimo->max_valor[l] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[l];
+									}
 								}
-								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15] < maximoYMinimo->min_valor[15]){
-									maximoYMinimo->min_valor[15] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[15];
+								maximoYMinimo->max_clave[0] = i;
+								maximoYMinimo->max_clave[1] = j;
+								maximoYMinimo->max_clave[2] = k;
+								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[0] < maximoYMinimo->min_valor[0]){
+									for(int l=0;l<=14;l++){
+										maximoYMinimo->min_valor[l] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[l];
+									}
+								}
+								uint8_t clave_actual[3] = {i,j,k};
+								int m=0;
+								while(m<=2 && clave_actual[m] == maximoYMinimo->min_clave[m]){
+									m++;
+								}
+								if(m<=2 && clave_actual[m] < maximoYMinimo->min_clave[m]){
 									maximoYMinimo->min_clave[0] = i;
 									maximoYMinimo->min_clave[1] = j;
 									maximoYMinimo->min_clave[2] = k;
@@ -115,10 +148,6 @@ maxmin* tdt_obtenerMaxMin(tdt* tabla) {
 				}
 			}
 		}
-		return maximoYMinimo;
 	}
-	else
-	{
-		return NULL;
-	}
+	return maximoYMinimo;
 }

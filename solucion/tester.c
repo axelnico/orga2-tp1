@@ -73,15 +73,25 @@ void printBloque(FILE *pFile, bloque* b) {
 
 void casoC(){
     FILE *pFile;
-    printf("Hola mundo \n");
     tdt *tabla = tdt_crear("sa");
-
+    printf("Anda crear \n");
     pFile = fopen( archivoCasoChico, "a" );
+
+    printf("Abro archivo caso chico \n");
 
     fputs( ">>> Test : operaciones sobre tabla vacia\n", pFile );
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
+
+    printf("Alamaceno la cantidad de claves en archivo \n");
+
     printmaxmin(pFile, tabla);
+
+    printf("Alamaceno el maximo y minimo en archivo \n");
+
     tdt_imprimirTraducciones(tabla, pFile);
+
+    printf("Imprimo traducciones \n");
+
     tdt_borrar(tabla,clave1);
     tdt_borrar(tabla,clave2);
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
@@ -99,18 +109,27 @@ void casoC(){
     fputs( ">>> Test : operaciones basicas sobre tabla no vacia\n", pFile );
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
     tdt_imprimirTraducciones(tabla, pFile);
+    printf("Imprimo traducciones 2\n");
+
     tdt_agregar(tabla, clave1, valor1);
     tdt_agregar(tabla, clave2, valor2);
+
     tdt_agregar(tabla, clave3, valor3);
     tdt_agregar(tabla, clave4, valor4);
     tdt_agregar(tabla, clave5, valor5);
     tdt_agregar(tabla, clave6, valor6);
     tdt_agregar(tabla, clave7, valor7);
+
+    printf("Agrego clave y valor funcionan\n");
+
     tdt_imprimirTraducciones(tabla, pFile);
     tdt_borrar(tabla,clave2);
     tdt_borrar(tabla,clave3);
     tdt_borrar(tabla,clave4);
     tdt_borrar(tabla,clave5);
+
+    printf("Borrar funciona\n");
+
     tdt_imprimirTraducciones(tabla, pFile);
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
     fprintf(pFile,"\n");
@@ -119,6 +138,9 @@ void casoC(){
 
     tdt_imprimirTraducciones(tabla, pFile);
     printmaxmin(pFile, tabla);
+
+    printf("Max min funciona\n");
+
     tdt_agregar(tabla, clave1, valor1);
     printmaxmin(pFile, tabla);
     tdt_agregar(tabla, clave2, valor2);
@@ -128,6 +150,9 @@ void casoC(){
     tdt_imprimirTraducciones(tabla, pFile);
     tdt_agregar(tabla, clave4, valor4);
     printmaxmin(pFile, tabla);
+
+    printf("Aca falla el maximo\n");
+
     tdt_agregar(tabla, clave5, valor5);
     printmaxmin(pFile, tabla);
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );

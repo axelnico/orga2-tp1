@@ -37,34 +37,24 @@ push rbx;
 push r11;
 mov rbx, rdi ; me guardo el puntero a la identificacion
 
-xor eax, eax ; eax lo uso como contador para saber cuantos bytes tengo que reservar para la identificacion
+xor rax, rax ; eax lo uso como contador para saber cuantos bytes tengo que reservar para la identificacion
 .loop_identificacion:
-cmp byte [rdi + eax], NULL
+cmp byte [rdi + rax], NULL
 je .copiaIdentificacion
-add eax, 1
+add rax, 1
 jmp .loop_identificacion
 
-mov rdi,eax
-call malloc
-
-
-
-
-
-mov rdi,TDT_SIZEd ;reservo memoria para la estructura de tdt
-call malloc
-mov qword xmm0, rax ; en xmm0 voy a devolver el puntero a la estructura creada
-
-
-mov rdi, rbx ; en rdi vuelvo a tener el puntero a la identificacion
-
-
-
 .copiaIdentificacion:
-mov rdi,eax
+mov rdi,rax
 call malloc
-mov [xmm0 + TDT_OFFSET_IDENTIFICACION], rax
+mov rdi,rax
+mov rsi,rbx
+call strcpy
+mov rbx,rax ;en rbx ahora tengo el puntero a la nuea indentificacion
 
+mov rdi,TDT_SIZE ;reservo memoria para la estructura de tdt
+call malloc
+mov [rax +TDT_OFFSET_IDENTIFICACION],rbx
 
 .fin:
 pop r11
