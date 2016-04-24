@@ -276,7 +276,7 @@ xor r13,r13 ; r13 lo uso como indice para iterar las tablas
 cmp qword [r14 +r13*8],NULL ;en [r14] tengo el puntero a la primera entrada de tdtN1
 je .siguienteDetdtN1_t
 mov r15,[r14 +r13*8]
-push r13
+push r13 ; queda desalineada
 xor r13,r13 ; vuelvo a limipiar r13
 
 .looptdtN2_t:
@@ -289,6 +289,7 @@ mov r12,[r15 +r13*8]
 .looptdtN3_t:
 ; aca borro todas las tablas de nivel 3
 mov rdi,r12
+sub rsp,8 ;queda alineada
 call free
 inc r13
 cmp r13,256d
@@ -299,19 +300,11 @@ je .borrarSegunda
 ;add r12,8
 jmp .looptdtN2_t
 
-.limpiar_contador_y_loop_segunda_tabla:
-pop r13
-jmp .looptdtN2_t
-
 .siguienteDetdtN2_t:
 inc r13
 cmp r13,256d
 je .borrarSegunda
 jmp .looptdtN2_t
-
-.limpiar_contador_y_loop_primera_tabla:
-pop r13
-jmp .looptdtN1_t
 
 
 .siguienteDetdtN1_t:
@@ -340,6 +333,7 @@ mov rdi,rbx
 call free
 
 .fin:
+add rsp,8
 pop r15
 pop r14
 pop r13

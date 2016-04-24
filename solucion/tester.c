@@ -334,10 +334,12 @@ void casoG() {
 
       fputs( ">>> Test : traducir bloques\n", pFile );
 
+      printf("Antes de traducir!!!!! \n");
+
       tdt_traducirBloques(tabla,bbTraducir);
 
       printf("QUEEEEEEEEEEEEEEEEEEE \n");
-      
+
       fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
       for(i=0;i<n;i++)
         printBloque(pFile,bbTraducir[i]);
