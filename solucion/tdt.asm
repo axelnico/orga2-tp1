@@ -183,37 +183,47 @@ tdt_traducir:
 ; en rdx tengo el puntero al valor
 push rbp
 mov rbp,rsp
+push rbx
+xor rax,rax
 cmp qword [rdi + TDT_OFFSET_PRIMERA],NULL
 je .fin
 mov rdi, [rdi + TDT_OFFSET_PRIMERA] ;en rdi tengo a la primera tabla
-mov rax, [rsi] ;en rax tengo la primera parte de la clave
+mov byte al, [rsi] ;en al tengo la primera parte de la clave
 cmp qword [rdi + rax*8],NULL
 je .fin
 mov rdi,[rdi + rax*8] ;en rdi tengo a la segunda tabla
-mov rax, [rsi + 8] ; en rax tengo la segunda parte de la clave
+mov byte al, [rsi + 1] ; en al tengo la segunda parte de la clave
 cmp qword [rdi + rax*8],NULL
 je .fin
-mov rdi,[rdi + rax*8] ;en rdi tengo a la tercera tabla
-mov rax, [rsi + 16] ; en rax tengo la tercera parte de la clave
-mov rdi,[rdi + rax*8] ;en rdi tengo al valor valido
-mov rax, rdi
-mov rdi,[rdi + VALOR_VALIDO_OFFSET_VALIDO] ;en rdi tengo el valor valido
-cmp byte [rdi],1d ;me fijo si valor valido es 1
+mov rdi,[rdi + rax*8] ;en rdi tengo puntero a la tercera tabla
+mov byte al, [rsi + 2] ; en al tengo la tercera parte de la clave
+shl rax,4
+cmp byte [rdi + rax +15],1d
 jne .fin
+jmp .copiaValorTraduccion
+;mov rax, [rsi + 16] ; en rax tengo la tercera parte de la clave
+;mov rdi,[rdi + rax*8] ;en rdi tengo al valor valido
+;mov rax, rdi
+;mov rdi,[rdi + VALOR_VALIDO_OFFSET_VALIDO] ;en rdi tengo el valor valido
+;cmp byte [rdi],1d ;me fijo si valor valido es 1
+;jne .fin
 
 ;Copio el valor en rsi
-xor rcx,rcx
 .copiaValorTraduccion:
-add rax,rcx
-mov [rsi + rcx*8],rax
+xor rcx,rcx
+.loopValorTraduccion:
+mov byte  r8b, [rdi + rax]
+mov [rdx + rcx],r8b
 inc rcx
-cmp rcx,16
+inc rax
+cmp rcx,15
 je .fin
-jmp .copiaValorTraduccion
+jmp .loopValorTraduccion
 
 
 
 .fin:
+pop rbx
 pop rbp
 ret
 
