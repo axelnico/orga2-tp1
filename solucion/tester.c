@@ -92,17 +92,37 @@ void casoC(){
 
     printf("Imprimo traducciones \n");
 
+
+    printf("Llamo a agregar bloque \n");
+
     tdt_borrar(tabla,clave1);
     tdt_borrar(tabla,clave2);
+
+
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
     tdt_borrar(tabla,clave3);
     tdt_imprimirTraducciones(tabla, pFile);
+
+
+
     tdt_borrarBloque(tabla,&b1);
+
+
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
+
     tdt_borrarBloque(tabla,&b2);
+
     tdt_borrarBloque(tabla,&b3);
+
+
     tdt_imprimirTraducciones(tabla, pFile);
+
+
+
     tdt_borrarBloques(tabla,(bloque**)&b);
+
+
+
     tdt_imprimirTraducciones(tabla, pFile);
     fprintf(pFile,"\n");
 
@@ -161,27 +181,49 @@ void casoC(){
     tdt_agregar(tabla, clave7, valor7);
     printmaxmin(pFile, tabla);
     tdt_imprimirTraducciones(tabla, pFile);
+
+      printf("Antes de agregar bloque\n");
+
+    tdt_agregarBloque(tabla,&b1);
+
+      printf("Despues de agregar bloque\n");
+
     tdt_agregarBloque(tabla,&b1);
     tdt_agregarBloque(tabla,&b1);
-    tdt_agregarBloque(tabla,&b1);
+
+    printf("Despues de agregar bloque 2\n");
+
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
     tdt_imprimirTraducciones(tabla, pFile);
     tdt_agregarBloques(tabla,(bloque**)&b);
     tdt_agregarBloques(tabla,(bloque**)&b);
     tdt_agregarBloques(tabla,(bloque**)&b);
+
+printf("Despues de agregar bloquesss\n");
+
     tdt_imprimirTraducciones(tabla, pFile);
     tdt_borrar(tabla,clave1);
     tdt_borrar(tabla,clave2);
     tdt_borrar(tabla,clave2);
     tdt_borrar(tabla,clave3);
     tdt_borrar(tabla,clave7);
+
+    printf("Despues de borrar\n");
     tdt_borrarBloques(tabla,(bloque**)&b);
+
+      printf("Borrar bloques!!\n");
+
     tdt_imprimirTraducciones(tabla, pFile);
     fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
-    tdt_recrear(&tabla,"saaaaaaaaaaaaaaaaaa");
+    //tdt_recrear(&tabla,"saaaaaaaaaaaaaaaaaa");
     tdt_agregarBloques(tabla,(bloque**)&b);
     tdt_imprimirTraducciones(tabla, pFile);
+
+    printf("Tamaño tabla %d\n", tabla->cantidad);
+
     tdt_destruir(&tabla);
+
+      printf("Destruir funciona!!!!!\n");
 
     fclose( pFile );
 }

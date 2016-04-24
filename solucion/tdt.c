@@ -7,29 +7,30 @@ void tdt_agregar(tdt* tabla, uint8_t* clave, uint8_t* valor) {
 		for(int i=0;i<=255;i++){
 			tabla->primera->entradas[i] = NULL;
 		}
+	}
+
+	// Hay una tabla pero la primera subtabla no corresponde con el primer caracter de la clave
+	if(tabla->primera->entradas[clave[0]] == NULL){
 		tabla->primera->entradas[clave[0]] = malloc(sizeof(tdtN2));
-		tabla->primera->entradas[clave[0]]->entradas[clave[1]] = malloc(sizeof(tdtN3));
+		for(int i=0;i<=255;i++){
+			tabla->primera->entradas[clave[0]]->entradas[i] = NULL;
+		}
 	}
-	else
-	{
-		// Hay una tabla pero la primera subtabla no corresponde con el primer caracter de la clave
-		if(tabla->primera->entradas[clave[0]] == NULL){
-			tabla->primera->entradas[clave[0]] = malloc(sizeof(tdtN2));
+
+	// Hay una tabla y existe la pimera subtabla con el primer caracter de la clave pero no existe la segunda subtabla con el segundo caracter
+	if(tabla->primera->entradas[clave[0]]->entradas[clave[1]] == NULL){
 			tabla->primera->entradas[clave[0]]->entradas[clave[1]] = malloc(sizeof(tdtN3));
-		}
-		// Hay una tabla y existe la pimera subtabla con el primer caracter de la clave pero no existe la segunda subtabla con el segundo caracter
-		else{
-			if(tabla->primera->entradas[clave[0]]->entradas[clave[1]] == NULL){
-				tabla->primera->entradas[clave[0]]->entradas[clave[1]] = malloc(sizeof(tdtN3));
+			for(int i=0;i<=255;i++){
+				tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[i].valido = 0;
 			}
-		}
 	}
+
 	// En la tercera subtabla en la posicion del tercer caracter registro la nueva traduccion
 	for(int i=0;i<=14;i++){
 		tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valor.val[i] = valor[i];
 	}
 
-	if(!tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido == 1){
+	if(tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido != 1){
 		tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido = 1;
 		tabla->cantidad = tabla->cantidad + 1;
 	}
@@ -42,6 +43,7 @@ void tdt_borrar(tdt* tabla, uint8_t* clave) {
 
 	tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[clave[2]].valido = 0;
 	tabla->cantidad = tabla->cantidad  - 1;
+
 	// Me fijo si quedo aluna traduccion valida en la tercer subtabla
 	int i = 0;
 	while(i<256 && tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas[i].valido == 0){
@@ -49,7 +51,8 @@ void tdt_borrar(tdt* tabla, uint8_t* clave) {
 	}
 	// Si no quedo ninguna traduccion valida en la tercer subtabla la borro
 	if(i==256){
-		free(&(tabla->primera->entradas[clave[0]]->entradas[clave[1]]->entradas));
+		free(tabla->primera->entradas[clave[0]]->entradas[clave[1]]);
+		tabla->primera->entradas[clave[0]]->entradas[clave[1]] = NULL;
 	}
 	// Me fijo si quedo algun caracter de alguna clave en la segunda subtabla
 	i= 0;
@@ -58,7 +61,8 @@ void tdt_borrar(tdt* tabla, uint8_t* clave) {
 	}
 	// Si en la segunda subtabla no hay ningun caracter almacenado la borro
 	if(i==256){
-		free(&(tabla->primera->entradas[clave[0]]));
+		free(tabla->primera->entradas[clave[0]]);
+		tabla->primera->entradas[clave[0]] = NULL;
 	}
 	// Me fijo si hay al menos una traduccion almacenada en la tabla
 	i = 0;
@@ -67,7 +71,8 @@ void tdt_borrar(tdt* tabla, uint8_t* clave) {
 	}
 	// Si la tabla se quedó sin ninguna traduccion la borro
 	if(i==256){
-		free(&(tabla->primera));
+		free(tabla->primera);
+		tabla->primera = NULL;
 	}
 }
 }
