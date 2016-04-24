@@ -26,6 +26,7 @@
   %define NULL                        0
   %define BLOQUE_OFFSET_CLAVE         0
   %define BLOQUE_OFFSET_VALOR         3
+  %define VALOR_VALIDO_OFFSET_VALIDO  15
 
 section .text
 
@@ -71,6 +72,36 @@ ret
 ; =====================================
 ; void tdt_recrear(tdt** tabla, char* identificacion)
 tdt_recrear:
+push rbp  ;armo el stack frame
+mov rbp,rsp
+push rbx
+push r11
+mov rbx, rdi ;me guardo una copia del puntero a puntero de la tabla
+mov r11, rsi ;me guardo una copia del puntero a la nueva identificacion
+mov rdi,[rdi] ;en rdi tengo el puntero a la tabla
+cmp qword rsi,NULL ;en rsi tengo el puntero a la identificacion
+je .recreoLaTablaConMismaIdentificacionOriginal
+mov rdi,rbx ; en rdi vuelvo a poner el puntero a puntero a la tabla
+call tdt_destruir
+mov rdi,r11
+call tdt_crear
+jmp .fin
+
+.recreoLaTablaConMismaIdentificacionOriginal:
+mov rdi,rbx ; en rdi vuelvo a poner el puntero a puntero a la tabla
+call tdt_destruir
+mov rdi, [rbx] ; en rdi pongo el puntero a la tabla, que esta apuntando a la identificacion
+call tdt_crear
+
+.fin:
+mov [rbx],rax ;me guardo en lo que apuntaba el puntero a la tabla, el nuevo puntero a la nueva tabla
+
+pop r11
+pop rbx
+pop rbp
+ret
+
+
 
 ; =====================================
 ; uint32_t tdt_cantidad(tdt* tabla)
@@ -147,6 +178,46 @@ ret
 ; =====================================
 ; void tdt_traducir(tdt* tabla, uint8_t* clave, uint8_t* valor)
 tdt_traducir:
+; en rdi tengo el puntero a la tabla
+; en rsi tengo el puntero a la clave
+; en rdx tengo el puntero al valor
+push rbp
+mov rbp,rsp
+cmp qword [rdi + TDT_OFFSET_PRIMERA],NULL
+je .fin
+mov rdi, [rdi + TDT_OFFSET_PRIMERA] ;en rdi tengo a la primera tabla
+mov rax, [rsi] ;en rax tengo la primera parte de la clave
+cmp qword [rdi + rax*8],NULL
+je .fin
+mov rdi,[rdi + rax*8] ;en rdi tengo a la segunda tabla
+mov rax, [rsi + 8] ; en rax tengo la segunda parte de la clave
+cmp qword [rdi + rax*8],NULL
+je .fin
+mov rdi,[rdi + rax*8] ;en rdi tengo a la tercera tabla
+mov rax, [rsi + 16] ; en rax tengo la tercera parte de la clave
+mov rdi,[rdi + rax*8] ;en rdi tengo al valor valido
+mov rax, rdi
+mov rdi,[rdi + VALOR_VALIDO_OFFSET_VALIDO] ;en rdi tengo el valor valido
+cmp byte [rdi],1d ;me fijo si valor valido es 1
+jne .fin
+
+;Copio el valor en rsi
+xor rcx,rcx
+.copiaValorTraduccion:
+add rax,rcx
+mov [rsi + rcx*8],rax
+inc rcx
+cmp rcx,16
+je .fin
+jmp .copiaValorTraduccion
+
+
+
+.fin:
+pop rbp
+ret
+
+
 
 ; =====================================
 ; void tdt_traducirBloque(tdt* tabla, bloque* b)

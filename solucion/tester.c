@@ -221,7 +221,7 @@ printf("Despues de agregar bloquesss\n");
 
     printf("Tamaño tabla %d\n", tabla->cantidad);
 
-    tdt_destruir(&tabla);
+    //tdt_destruir(&tabla);
 
       printf("Destruir funciona!!!!!\n");
 
@@ -253,6 +253,9 @@ void casoG() {
       bb[n]=0;
       bbTraducir[n]=0;
 
+
+
+
       /* comienzo de casos */
       tdt *tabla = tdt_crear("gande!");
 
@@ -277,6 +280,9 @@ void casoG() {
       tdt_imprimirTraducciones(tabla, pFile);
       fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
 
+
+
+
       fputs( ">>> Test : borrar individual\n", pFile );
 
       for(i=n/4;i<n/2;i++)
@@ -296,6 +302,8 @@ void casoG() {
       printmaxmin(pFile, tabla);
       fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
       fprintf(pFile,"\n");
+
+
 
       fputs( ">>> Test : borrar y agregar aleatoriamente paso 2\n", pFile );
 
@@ -322,9 +330,14 @@ void casoG() {
       printmaxmin(pFile, tabla);
       fprintf(pFile,"\n");
 
+
+
       fputs( ">>> Test : traducir bloques\n", pFile );
 
       tdt_traducirBloques(tabla,bbTraducir);
+
+      printf("QUEEEEEEEEEEEEEEEEEEE \n");
+      
       fprintf( pFile, "%i\n", tdt_cantidad(tabla) );
       for(i=0;i<n;i++)
         printBloque(pFile,bbTraducir[i]);
