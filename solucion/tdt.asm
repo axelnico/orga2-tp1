@@ -268,66 +268,61 @@ ret
 tdt_destruir:
 push rbp
 mov rbp,rsp
-push rbx
+push rbx ; rbx puntero a la tabla
 push r12
-push r13
-push r14
+push r13 ; indice para recorrer de la primera tabla
+push r14 ; indice base de la primera tabla
 push r15
-sub rsp,8 ; la pila ahora esta alineada a 16 bytes
+add rsp,8 ; la pila ahora esta alineada a 16 bytes
 
 mov rbx, [rdi] ;en rbx tengo el puntero a la tabla
 cmp qword [rbx + TDT_OFFSET_PRIMERA],NULL ; si no tengo primera tabla borro la identificacion y la tabla
 je .borrarTablaPrincipal
 ; itero todas las entradas en la primera tabla
 mov r14,[rbx + TDT_OFFSET_PRIMERA]
-xor r13,r13 ; r13 lo uso como indice para iterar las tablas
+xor r13,r13 ; r13 lo uso como indice de la primera tabla
 
 .looptdtN1_t:
 cmp qword [r14 +r13*8],NULL ;en [r14] tengo el puntero a la primera entrada de tdtN1
-je .siguienteDetdtN1_t
-mov r15,[r14 +r13*8]
-push r13 ; queda desalineada
-xor r13,r13 ; vuelvo a limipiar r13
-
-.looptdtN2_t:
-cmp qword [r15 +r13*8],NULL ;en [r15] tengo el puntero a la primera entrada de tdtN2
-je .siguienteDetdtN2_t
-mov r12,[r15 +r13*8]
-;push r13
-;xor r13,r13 ; vuelvo a limipiar r13
-
-.looptdtN3_t:
-; aca borro todas las tablas de nivel 3
-mov rdi,r12
-sub rsp,8 ;queda alineada
-call free
-inc r13
-cmp r13,256d
-je .borrarSegunda
-;inc r13
-;cmp r13,256d
-;je .limpiar_contador_y_loop_segunda_tabla
-;add r12,8
-jmp .looptdtN2_t
-
-.siguienteDetdtN2_t:
-inc r13
-cmp r13,256d
-je .borrarSegunda
-jmp .looptdtN2_t
-
-
-.siguienteDetdtN1_t:
+jne .inicio_looptdtN2_t
 inc r13
 cmp r13,256d
 je .borrarprimera
 jmp .looptdtN1_t
 
-.borrarSegunda:
-mov rdi,r15
+
+.inicio_looptdtN2_t:
+xor r15,r15 ; r15 va a ser el indice de la segunda tabla
+mov r12,[r14 +r13*8]
+
+.looptdtN2_t:
+cmp qword [r12 +r15*8],NULL ;en [r15] tengo el puntero a la primera entrada de tdtN2
+jne .looptdtN3_t
+inc r15
+cmp r15,256d
+je .borrarSegunda
+jmp .looptdtN2_t
+;mov r12,[r15 +r13*8]
+;push r13
+;xor r13,r13 ; vuelvo a limipiar r13
+
+.looptdtN3_t:
+; aca borro todas las tablas de nivel 3
+mov rdi,[r12 + r15*8]
 call free
-pop r13
-inc r13
+mov qword [r12 + r15*8],NULL
+;inc r13
+;cmp r13,256d
+jmp .looptdtN2_t
+;inc r13
+;cmp r13,256d
+;je .limpiar_contador_y_loop_segunda_tabla
+;add r12,8
+
+.borrarSegunda:
+mov rdi,r12
+call free
+mov qword [r12],NULL
 jmp .looptdtN1_t
 
 
@@ -343,7 +338,7 @@ mov rdi,rbx
 call free
 
 .fin:
-add rsp,8
+sub rsp,8
 pop r15
 pop r14
 pop r13

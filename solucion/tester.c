@@ -39,7 +39,7 @@ int main() {
   remove(archivoCasoChico);
   casoC();
   remove(archivoCasoGrande);
-  casoG();
+  //casoG();
   return 0;
 }
 
@@ -221,7 +221,7 @@ printf("Despues de agregar bloquesss\n");
 
     printf("Tamaño tabla %d\n", tabla->cantidad);
 
-    //tdt_destruir(&tabla);
+    tdt_destruir(&tabla);
 
       printf("Destruir funciona!!!!!\n");
 
