@@ -124,7 +124,11 @@ maxmin* tdt_obtenerMaxMin(tdt* tabla) {
 					if(tabla->primera->entradas[i]->entradas[j] != NULL){
 						for(int k=0;k<256;k++){
 							if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valido == 1){
-								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[0] > maximoYMinimo->max_valor[0]){
+								int it_val = 0;
+								while(it_val <= 14 && tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[it_val] == maximoYMinimo->max_valor[it_val]){
+									it_val++;
+								}
+								if(it_val <= 14 && tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[it_val] > maximoYMinimo->max_valor[it_val]){
 									for(int l=0;l<=14;l++){
 										maximoYMinimo->max_valor[l] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[l];
 									}
@@ -132,9 +136,13 @@ maxmin* tdt_obtenerMaxMin(tdt* tabla) {
 								maximoYMinimo->max_clave[0] = i;
 								maximoYMinimo->max_clave[1] = j;
 								maximoYMinimo->max_clave[2] = k;
-								if(tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[0] < maximoYMinimo->min_valor[0]){
+								it_val = 0;
+								while(it_val <= 14 && tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[it_val] == maximoYMinimo->min_valor[it_val]){
+									it_val++;
+								}
+								if(it_val <= 14 && tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[it_val] < maximoYMinimo->min_valor[it_val]){
 									for(int l=0;l<=14;l++){
-										maximoYMinimo->min_valor[l] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[l];
+											maximoYMinimo->min_valor[l] = tabla->primera->entradas[i]->entradas[j]->entradas[k].valor.val[l];
 									}
 								}
 								uint8_t clave_actual[3] = {i,j,k};
